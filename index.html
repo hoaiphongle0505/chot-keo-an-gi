@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f6f1" />
+    <meta
+      name="description"
+      content="Khám phá món ngon, gom lựa chọn và chốt kèo ăn uống cùng hội bạn."
+    />
+    <title>Chốt kèo ăn gì? — Khám phá món ngon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Chốt kèo ăn gì - Trang chủ">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M18 3.5 31 11v14L18 32.5 5 25V11L18 3.5Z" fill="currentColor" />
+            <path d="m12 18 4 4 8-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="brand-name">chốt kèo<span>ăn gì?</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Điều hướng chính">
+        <a class="nav-link" href="#vong-quay">Vòng quay</a>
+        <a class="nav-link active" href="#kham-pha">Khám phá</a>
+        <a class="nav-link" href="#bo-suu-tap">Bộ sưu tập</a>
+      </nav>
+      <button class="header-cta" id="header-pick" type="button">
+        <span>Quay món ngay</span>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title">Đang đói.<br />Chưa biết <em>ăn gì?</em></h1>
+          <p class="hero-description">
+            Từ món Việt thân quen đến hương vị khắp thế giới — tìm món hợp mood rồi chốt kèo cùng hội bạn.
+          </p>
+          <a class="hero-link" href="#kham-pha">Khám phá món ngon <span aria-hidden="true">↓</span></a>
+          <div class="hero-social">
+            <div class="avatar-stack" aria-hidden="true">
+              <span>H</span><span>M</span><span>L</span><span class="avatar-count">+</span>
+            </div>
+            <p><strong>Cả hội cùng chọn</strong><br /><span>Quyết định vui hơn, bữa ăn ngon hơn</span></p>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img
+            src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1400&q=88"
+            alt="Pizza nướng vàng với phô mai và rau thơm"
+            fetchpriority="high"
+          />
+          <div class="hero-image-shade"></div>
+          <div class="photo-caption"><span class="caption-line"></span><span>ĐANG ĐƯỢC YÊU THÍCH</span></div>
+          <div class="hero-note">
+            <span class="note-icon" aria-hidden="true">✦</span>
+            <span><strong>Pizza nhà làm</strong><small>Ý · 35 phút</small></span>
+            <span class="note-arrow" aria-hidden="true">↗</span>
+          </div>
+          <span class="hero-sticker" aria-hidden="true">ngon<br />hết ý!</span>
+        </div>
+        <span class="hero-index" aria-hidden="true">01 / 04</span>
+      </section>
+
+      <section class="wheel-section" id="vong-quay" aria-labelledby="wheel-title">
+        <div class="wheel-heading">
+          <div>
+            <h2 id="wheel-title">Để <em>vòng quay</em> quyết định</h2>
+            <p>Chọn buổi ăn, quay một món bất kỳ và nhận luôn gợi ý kiểu quán.</p>
+          </div>
+          <span class="wheel-label"><span></span> Tất cả món trong bộ sưu tập</span>
+        </div>
+        <div class="meal-tabs" id="meal-tabs" role="group" aria-label="Chọn buổi ăn">
+          <button class="meal-tab active" type="button" data-meal="all" aria-pressed="true">🍽️ Tất cả món</button>
+          <button class="meal-tab" type="button" data-meal="breakfast" aria-pressed="false">🌤️ Bữa sáng</button>
+          <button class="meal-tab" type="button" data-meal="lunch" aria-pressed="false">☀️ Bữa trưa</button>
+          <button class="meal-tab" type="button" data-meal="dinner" aria-pressed="false">🌙 Bữa tối</button>
+        </div>
+        <div class="wheel-layout">
+          <div class="wheel-board">
+            <span class="wheel-pointer" aria-hidden="true"></span>
+            <canvas id="food-wheel" width="520" height="520" role="img" aria-label="Vòng quay các món ăn"></canvas>
+            <div class="wheel-hub" aria-hidden="true"><span>CHỐT</span><strong>món!</strong></div>
+          </div>
+          <div class="wheel-info">
+            <h3>Để hôm nay<br /><em>may mắn lên tiếng.</em></h3>
+            <p id="wheel-description">Vòng quay sẽ chọn ngẫu nhiên trong toàn bộ món ăn — rồi tìm kiểu địa điểm hợp với buổi ăn.</p>
+            <div class="wheel-legend"><span class="legend-swatch"></span><span id="wheel-count">28 món đang chờ bạn</span></div>
+            <button class="spin-button" id="spin-button" type="button"><span class="spin-icon" aria-hidden="true">⟳</span> Quay chọn món <span aria-hidden="true">↗</span></button>
+            <p class="location-note">Gợi ý địa điểm là kiểu quán; mở Google Maps để tìm quán thực tế gần bạn.</p>
+            <div class="wheel-result" id="wheel-result" aria-live="polite" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="discover-section" id="kham-pha" aria-labelledby="discover-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="discover-title">Chọn theo <em>khẩu vị</em></h2>
+          </div>
+          <p class="section-aside"><span class="live-dot"></span> Có món cho mọi mood</p>
+        </div>
+
+        <div class="discovery-controls">
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4 4" /></svg>
+            <input id="search-input" type="search" placeholder="Thèm món gì hôm nay?" autocomplete="off" />
+            <kbd>⌘ K</kbd>
+          </label>
+          <button class="filter-toggle" id="filter-toggle" type="button" aria-expanded="false">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14M5.5 10h9M8 15h4" /></svg>
+            Bộ lọc <span class="filter-count" id="filter-count">0</span>
+          </button>
+        </div>
+
+        <div class="filter-panel" id="filter-panel" hidden>
+          <label class="filter-select-label">Sắp xếp
+            <select id="sort-select">
+              <option value="popular">Gợi ý cho bạn</option>
+              <option value="quick">Nhanh nhất</option>
+              <option value="name">Tên món A–Z</option>
+            </select>
+          </label>
+          <label class="filter-select-label">Thời gian nấu
+            <select id="time-select">
+              <option value="any">Bất kỳ</option>
+              <option value="20">Dưới 20 phút</option>
+              <option value="30">Dưới 30 phút</option>
+            </select>
+          </label>
+          <label class="filter-select-label">Ẩm thực
+            <select id="cuisine-select">
+              <option value="any">Tất cả</option>
+              <option value="Việt Nam">Việt Nam</option>
+              <option value="Nhật Bản">Nhật Bản</option>
+              <option value="Hàn Quốc">Hàn Quốc</option>
+              <option value="Ý">Ý</option>
+              <option value="Thái Lan">Thái Lan</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </label>
+          <label class="filter-select-label">Chế độ ăn
+            <select id="diet-select">
+              <option value="any">Tất cả</option>
+              <option value="vegetarian">Có món chay</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="category-row" id="category-row" role="group" aria-label="Lọc theo danh mục">
+          <button class="category-chip active" type="button" data-category="Tất cả">Tất cả món <span id="category-count">28</span></button>
+          <button class="category-chip" type="button" data-category="Món Việt">🇻🇳 Món Việt</button>
+          <button class="category-chip" type="button" data-category="Mì &amp; phở">🍜 Mì &amp; phở</button>
+          <button class="category-chip" type="button" data-category="Cơm &amp; bún">🍚 Cơm &amp; bún</button>
+          <button class="category-chip" type="button" data-category="Món quốc tế">🌍 Món quốc tế</button>
+          <button class="category-chip" type="button" data-category="Đồ chay">🥬 Đồ chay</button>
+        </div>
+
+        <div class="results-line">
+          <p id="results-summary" aria-live="polite">Đang chọn món ngon cho bạn</p>
+          <button class="clear-filters" id="clear-filters" type="button" hidden>Xóa bộ lọc</button>
+        </div>
+
+        <div class="dish-grid" id="dish-grid" aria-live="polite"></div>
+        <div class="load-more-wrap">
+          <button class="load-more" id="load-more" type="button">Khám phá thêm món <span aria-hidden="true">↓</span></button>
+        </div>
+      </section>
+
+      <section class="group-callout" id="bo-suu-tap">
+        <span class="callout-spark" aria-hidden="true">✳</span>
+        <div><h2>Không cần tranh luận.<br /><em>Cứ để món ăn lên tiếng.</em></h2></div>
+        <p>Chọn vài món mọi người thích, rồi để tụi mình chốt kèo công bằng.</p>
+        <button id="callout-pick" type="button">Mở vòng xoay <span aria-hidden="true">↗</span></button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a class="brand footer-brand" href="#">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M18 3.5 31 11v14L18 32.5 5 25V11L18 3.5Z" fill="currentColor" /><path d="m12 18 4 4 8-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+        <span class="brand-name">chốt kèo<span>ăn gì?</span></span>
+      </a>
+      <p>Để mỗi bữa ăn bắt đầu bằng một niềm vui.</p>
+      <span class="footer-credit">LÀM BẰNG <span aria-label="tình yêu">♥</span> VÀ CƠN ĐÓI</span>
+    </footer>
+
+    <aside class="selection-dock" id="selection-dock" aria-live="polite" hidden>
+      <div class="dock-dishes" id="dock-dishes"></div>
+      <div class="dock-copy"><strong id="dock-count">0 món đã chọn</strong><span>Gom món rồi chốt kèo thôi</span></div>
+      <button class="dock-action" id="dock-pick" type="button">Chốt kèo <span aria-hidden="true">↗</span></button>
+      <button class="dock-clear" id="dock-clear" type="button" aria-label="Xóa các món đã chọn">×</button>
+    </aside>
+
+    <dialog class="result-dialog" id="result-dialog">
+      <button class="dialog-close" id="dialog-close" type="button" aria-label="Đóng">×</button>
+      <div class="result-content" id="result-content"></div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
