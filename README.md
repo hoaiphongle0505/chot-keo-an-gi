@@ -7,7 +7,7 @@ A Vietnamese-first food discovery and group-choice app. Open `index.html` in a b
 - Browse a curated starter collection of Vietnamese and international dishes, with search, cuisine/category filters, dietary filtering, and cook-time sorting.
 - Search TheMealDB's public API by dish name to discover additional recipes. Search is optional; the local collection continues to work without the network, and API failures are surfaced in the interface.
 - Select several dishes and draw one at random to settle the group's choice.
-- Spin a segmented wheel of all dishes or narrow the draw to breakfast, lunch, or dinner; each result shows a matching food photo, suggests a type of place, and opens a nearby Google Maps search.
+- Spin a horizontal photo reel of all dishes or narrow the draw to breakfast, lunch, or dinner; the centered marker lands on the chosen dish, and each result suggests a type of place and opens a nearby Google Maps search.
 - Use the responsive layout and reduced-motion support on desktop or mobile.
 
 The starter collection is not an exhaustive list of every dish worldwide. The public recipe search extends discovery on demand; data availability and coverage depend on TheMealDB.
