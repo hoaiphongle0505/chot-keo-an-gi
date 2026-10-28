@@ -39,8 +39,8 @@ const dock = document.querySelector("#selection-dock");
 const dialog = document.querySelector("#result-dialog");
 const resultContent = document.querySelector("#result-content");
 const toast = document.querySelector("#toast");
-const wheel = document.querySelector("#food-wheel");
-const wheelContext = wheel.getContext("2d");
+const reel = document.querySelector("#food-reel");
+const reelViewport = document.querySelector("#reel-viewport");
 const wheelResult = document.querySelector("#wheel-result");
 const state = {
   category: "Tất cả",
@@ -150,53 +150,29 @@ function wheelDishes() {
 }
 
 function renderWheel() {
-  if (isSpinning || !wheelContext) return;
+  if (isSpinning) return;
   const options = wheelDishes();
-  const center = wheel.width / 2;
-  const radius = center - 7;
-  const colors = ["#245c43", "#936334", "#55775b", "#a55531", "#4d6d50", "#8d6939", "#315e4a", "#a34f36"];
-  wheelContext.clearRect(0, 0, wheel.width, wheel.height);
-  if (!options.length) {
-    wheelContext.fillStyle = "#e8eee8";
-    wheelContext.beginPath();
-    wheelContext.arc(center, center, radius, 0, Math.PI * 2);
-    wheelContext.fill();
-    return;
-  }
-  const slice = (Math.PI * 2) / options.length;
-  options.forEach((dish, index) => {
-    const start = -Math.PI / 2 + index * slice;
-    const end = start + slice;
-    wheelContext.beginPath();
-    wheelContext.moveTo(center, center);
-    wheelContext.arc(center, center, radius, start, end);
-    wheelContext.closePath();
-    wheelContext.fillStyle = colors[index % colors.length];
-    wheelContext.fill();
-    wheelContext.strokeStyle = "#fffdf7";
-    wheelContext.lineWidth = 2;
-    wheelContext.stroke();
-
-    wheelContext.save();
-    wheelContext.translate(center, center);
-    const middle = start + slice / 2;
-    wheelContext.rotate(middle);
-    if (middle > Math.PI / 2 && middle < Math.PI * 1.5) wheelContext.rotate(Math.PI);
-    wheelContext.textAlign = "center";
-    wheelContext.textBaseline = "middle";
-    wheelContext.fillStyle = "#fffdf7";
-    const fontSize = options.length > 22 ? 14 : options.length > 15 ? 16 : 19;
-    wheelContext.font = `600 ${fontSize}px "DM Sans", sans-serif`;
-    const label = dish.name.length > 19 ? `${dish.name.slice(0, 17)}…` : dish.name;
-    wheelContext.fillText(label, 0, -radius * 0.68, radius * 0.58);
-    wheelContext.restore();
-  });
-  wheel.setAttribute("aria-label", `Vòng quay gồm ${options.length} món ${state.meal === "all" ? "mọi buổi" : `buổi ${state.meal}`}: ${options.map((dish) => dish.name).join(", ")}`);
+  reel.innerHTML = options.map((dish, index) => reelCard(dish, index)).join("");
+  reelViewport.scrollLeft = 0;
+  reel.style.transition = "none";
+  reel.style.transform = "translate3d(0, 0, 0)";
+  reelViewport.setAttribute("aria-label", `Danh sách ${options.length} món trong vòng quay`);
   document.querySelector("#wheel-count").textContent = `${options.length} món ${state.meal === "all" ? "đang chờ bạn" : `cho ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"}`}`;
   document.querySelector("#spin-button").disabled = options.length === 0;
   document.querySelector("#wheel-description").textContent = state.meal === "all"
     ? "Vòng quay sẽ chọn ngẫu nhiên trong toàn bộ món ăn — rồi tìm kiểu địa điểm hợp với buổi ăn."
     : `Vòng quay đang lọc ${options.length} món hợp với ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"} của bạn.`;
+}
+
+function reelCard(dish, index, isWinner = false) {
+  const rarity = index === 0 ? "MÓN TỦ" : dish.vegetarian ? "THUẦN CHAY" : "MÓN NGON";
+  return `<article class="reel-card${isWinner ? " reel-winner" : ""}" data-reel-index="${index}">
+    <div class="reel-photo-wrap">
+      <img class="reel-photo" src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" ${index < 6 ? 'loading="eager"' : 'loading="lazy"'} />
+      <span class="reel-rarity">${rarity}</span>
+    </div>
+    <div class="reel-card-copy"><span>${escapeHTML(dish.cuisine)}</span><h4>${escapeHTML(dish.name)}</h4></div>
+  </article>`;
 }
 
 function spinWheel() {
@@ -213,24 +189,29 @@ function spinWheel() {
   button.innerHTML = '<span class="spin-icon" aria-hidden="true">⟳</span> Đang quay…';
 
   const winnerIndex = Math.floor(Math.random() * options.length);
-  const segment = 360 / options.length;
-  const positionWithinSegment = 0.18 + Math.random() * 0.64;
-  const rotation = 360 * 6 + 360 - (winnerIndex + positionWithinSegment) * segment;
+  const targetIndex = 23;
+  const reelItems = Array.from({ length: targetIndex }, () => options[Math.floor(Math.random() * options.length)]);
+  reelItems.push(options[winnerIndex]);
+  reel.innerHTML = reelItems.map((dish, index) => reelCard(dish, index)).join("");
+  reelViewport.scrollLeft = 0;
+  reel.style.transition = "none";
+  reel.style.transform = "translate3d(0, 0, 0)";
+  const targetCard = reel.querySelector(`[data-reel-index="${targetIndex}"]`);
+  const destination = reelViewport.clientWidth / 2 - (targetCard.offsetLeft + targetCard.offsetWidth / 2);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const duration = reducedMotion ? 1 : 4300;
-  wheel.style.transition = "none";
-  wheel.style.transform = "rotate(0deg)";
-  void wheel.offsetWidth;
+  const duration = reducedMotion ? 1 : 4200;
+  void reel.offsetWidth;
   requestAnimationFrame(() => {
-    wheel.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
-    wheel.style.transform = `rotate(${rotation}deg)`;
+    reel.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
+    reel.style.transform = `translate3d(${destination}px, 0, 0)`;
   });
 
   setTimeout(() => {
     const winner = options[winnerIndex];
     const place = locations[state.meal][Math.floor(Math.random() * locations[state.meal].length)];
     const mapsQuery = encodeURIComponent(`${winner.name} ${place} gần đây`);
-    wheelResult.innerHTML = `<span class="wheel-result-label">KÈO NÀY CHỐT RỒI</span><h4>${escapeHTML(winner.name)}</h4><p>${escapeHTML(winner.cuisine)} · Gợi ý địa điểm: <strong>${escapeHTML(place)}</strong></p><a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer">Tìm quán gần bạn trên Google Maps ↗</a>`;
+    targetCard.classList.add("reel-winner");
+    wheelResult.innerHTML = `<img class="wheel-result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" /><div class="wheel-result-copy"><span class="wheel-result-label">KÈO NÀY CHỐT RỒI</span><h4>${escapeHTML(winner.name)}</h4><p>${escapeHTML(winner.cuisine)} · ${escapeHTML(place)}</p><a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer">Tìm quán gần bạn trên Google Maps <span aria-hidden="true">↗</span></a></div>`;
     wheelResult.hidden = false;
     wheelResult.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
     button.disabled = false;
@@ -363,8 +344,9 @@ document.querySelector("#meal-tabs").addEventListener("click", (event) => {
     tab.setAttribute("aria-pressed", String(active));
   });
   wheelResult.hidden = true;
-  wheel.style.transition = "transform 300ms cubic-bezier(.16,1,.3,1)";
-  wheel.style.transform = "rotate(0deg)";
+  reel.style.transition = "transform 300ms cubic-bezier(.16,1,.3,1)";
+  reel.style.transform = "translate3d(0, 0, 0)";
+  reelViewport.scrollLeft = 0;
   renderWheel();
 });
 
