@@ -48,7 +48,9 @@ const dock = document.querySelector("#selection-dock");
 const dialog = document.querySelector("#result-dialog");
 const resultContent = document.querySelector("#result-content");
 const toast = document.querySelector("#toast");
-const wheelArt = document.querySelector("#wheel-art");
+const wheelBoard = document.querySelector("#wheel-board");
+const reelViewport = document.querySelector("#reel-viewport");
+const reelTrack = document.querySelector("#reel-track");
 const wheelResult = document.querySelector("#wheel-result");
 const state = {
   category: "Tất cả",
@@ -66,7 +68,7 @@ const state = {
   meal: "all",
 };
 let isSpinning = false;
-let wheelRotation = 0;
+let centeredReelIndex = 0;
 
 const breakfastIds = new Set(["pho-bo", "bun-bo", "banh-mi", "bun-cha", "bun-rieu", "hu-tieu", "mi-quang", "com-ga", "goi-cuon", "xoi-xeo", "banh-cuon", "chao-ga", "banh-bao"]);
 const dinnerOnlyIds = new Set(["sushi", "ramen", "tteokbokki", "green-curry", "pizza", "pasta"]);
@@ -162,31 +164,27 @@ function wheelDishes() {
 function renderWheel() {
   if (isSpinning) return;
   const options = wheelDishes();
-  const colors = ["#245d45", "#9d7040", "#6f8d72", "#a94f34", "#4b775f", "#c18b43"];
-  const center = 250;
-  const radius = 238;
-  const pointAt = (angle) => {
-    const radians = (angle * Math.PI) / 180;
-    return [center + radius * Math.cos(radians), center + radius * Math.sin(radians)];
-  };
-  wheelArt.innerHTML = options.map((dish, index) => {
-    const step = 360 / options.length;
-    const start = -90 + index * step + Math.min(0.65, step / 8);
-    const end = -90 + (index + 1) * step - Math.min(0.65, step / 8);
-    const [startX, startY] = pointAt(start);
-    const [endX, endY] = pointAt(end);
-    const largeArc = end - start > 180 ? 1 : 0;
-    return `<path class="wheel-segment" d="M${center} ${center}L${startX} ${startY}A${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}Z" fill="${colors[index % colors.length]}" data-dish-index="${index}"><title>${escapeHTML(dish.name)}</title></path>`;
-  }).join("") + `<circle class="wheel-rim" cx="${center}" cy="${center}" r="${radius}" />`;
-  wheelArt.style.transition = "none";
-  wheelArt.style.transform = "rotate(0deg)";
-  wheelRotation = 0;
-  wheelArt.setAttribute("aria-label", `Vòng quay gồm ${options.length} món ăn`);
+  reelTrack.innerHTML = options.map(reelCard).join("");
+  reelTrack.style.transition = "none";
+  centeredReelIndex = Math.floor(options.length / 2);
+  reelTrack.style.transform = `translate3d(${reelOffset(centeredReelIndex)}px, 0, 0)`;
+  wheelBoard.classList.remove("is-spinning");
+  reelTrack.setAttribute("aria-label", `Dải chọn gồm ${options.length} món ăn`);
   document.querySelector("#wheel-count").textContent = `${options.length} món ${state.meal === "all" ? "đang chờ bạn" : `cho ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"}`}`;
   document.querySelector("#spin-button").disabled = options.length === 0;
   document.querySelector("#wheel-description").textContent = state.meal === "all"
-    ? "Vòng quay sẽ chọn ngẫu nhiên trong toàn bộ món ăn — rồi tìm kiểu địa điểm hợp với buổi ăn."
-    : `Vòng quay đang lọc ${options.length} món hợp với ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"} của bạn.`;
+    ? "Thẻ món sẽ lướt qua vạch chốt và dừng ở một lựa chọn ngẫu nhiên — kèm gợi ý kiểu quán."
+    : `Dải thẻ đang lọc ${options.length} món hợp với ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"} của bạn.`;
+}
+
+function reelCard(dish, index) {
+  return `<article class="reel-card" role="listitem" data-dish-index="${index}"><img src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" loading="lazy" decoding="async" /><span class="reel-card-shade"></span><span class="reel-card-meta">${escapeHTML(dish.cuisine)}</span><strong class="reel-card-name">${escapeHTML(dish.name)}</strong></article>`;
+}
+
+function reelOffset(index) {
+  const card = reelTrack.children[index];
+  if (!card) return 0;
+  return reelViewport.clientWidth / 2 - (card.offsetLeft + card.offsetWidth / 2);
 }
 
 function spinWheel() {
@@ -203,24 +201,32 @@ function spinWheel() {
   button.innerHTML = '<span class="spin-icon" aria-hidden="true">⟳</span> Đang quay…';
 
   const winnerIndex = Math.floor(Math.random() * options.length);
-  const segment = wheelArt.querySelector(`[data-dish-index="${winnerIndex}"]`);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const duration = reducedMotion ? 1 : 5200;
-  const alignment = (360 - (winnerIndex + 0.5) * 360 / options.length + 360) % 360;
-  const currentAlignment = ((wheelRotation % 360) + 360) % 360;
-  const rotation = wheelRotation + 6 * 360 + (alignment - currentAlignment + 360) % 360;
-  wheelArt.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
-  void wheelArt.offsetWidth;
+  const passes = Math.max(1, Math.ceil(8 / options.length));
+  const startPosition = centeredReelIndex;
+  const winnerOffset = (winnerIndex - (startPosition % options.length) + options.length) % options.length;
+  const winnerPosition = startPosition + options.length * passes + winnerOffset;
+  const sequence = Array.from({ length: winnerPosition + 1 }, (_, index) => options[index % options.length]);
+  reelTrack.innerHTML = sequence.map(reelCard).join("");
+  reelTrack.style.transition = "none";
+  centeredReelIndex = winnerPosition;
+  reelTrack.style.transform = `translate3d(${reelOffset(startPosition)}px, 0, 0)`;
+  wheelBoard.classList.add("is-spinning");
+  void reelTrack.offsetWidth;
   requestAnimationFrame(() => {
-    wheelArt.style.transform = `rotate(${rotation}deg)`;
-    wheelRotation = rotation;
+    reelTrack.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
+    reelTrack.style.transform = `translate3d(${reelOffset(winnerPosition)}px, 0, 0)`;
   });
 
   setTimeout(() => {
     const winner = options[winnerIndex];
     const place = locations[state.meal][Math.floor(Math.random() * locations[state.meal].length)];
     const mapsQuery = encodeURIComponent(`${winner.name} ${place} gần đây`);
-    segment.classList.add("wheel-segment--winner");
+    reelTrack.children[winnerPosition]?.classList.add("reel-card--winner");
+    wheelBoard.classList.remove("is-spinning");
+    reelTrack.style.transition = "none";
+    reelTrack.style.transform = `translate3d(${reelOffset(winnerPosition)}px, 0, 0)`;
     wheelResult.innerHTML = `<div class="wheel-result-image"><img class="wheel-result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" />${winner.imageSource ? `<a class="photo-credit" href="${escapeHTML(winner.imageSource)}" target="_blank" rel="noopener noreferrer">Nguồn ảnh ↗</a>` : ""}</div><div class="wheel-result-copy"><span class="wheel-result-label">KÈO NÀY CHỐT RỒI</span><h4>${escapeHTML(winner.name)}</h4><p>${escapeHTML(winner.cuisine)} · ${escapeHTML(place)}</p><a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer">Tìm quán gần bạn trên Google Maps <span aria-hidden="true">↗</span></a></div>`;
     wheelResult.hidden = false;
     wheelResult.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
@@ -355,9 +361,6 @@ document.querySelector("#meal-tabs").addEventListener("click", (event) => {
     tab.setAttribute("aria-pressed", String(active));
   });
   wheelResult.hidden = true;
-  reel.style.transition = "transform 300ms cubic-bezier(.16,1,.3,1)";
-  reel.style.transform = "translate3d(0, 0, 0)";
-  reelViewport.scrollLeft = 0;
   renderWheel();
 });
 
@@ -389,6 +392,13 @@ function pickWinner() {
 
 document.querySelector("#dock-pick").addEventListener("click", pickWinner);
 document.querySelector("#spin-button").addEventListener("click", spinWheel);
+window.addEventListener("resize", () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (isSpinning) return;
+    reelTrack.style.transition = "none";
+    reelTrack.style.transform = `translate3d(${reelOffset(centeredReelIndex)}px, 0, 0)`;
+  }));
+});
 for (const selector of ["#header-pick", "#callout-pick"]) {
   document.querySelector(selector).addEventListener("click", () => document.querySelector("#vong-quay").scrollIntoView({ behavior: "smooth" }));
 }
