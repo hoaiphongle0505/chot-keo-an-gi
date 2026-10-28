@@ -1,34 +1,43 @@
-const photo = (id, width = 720) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=82`;
+const commonsPhoto = (path, file, width = 960) => {
+  const encodedFile = encodeURIComponent(file).replace(/%20/g, "_");
+  return {
+    image: width
+      ? `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${encodedFile}/${width}px-${encodedFile}`
+      : `https://upload.wikimedia.org/wikipedia/commons/${path}/${encodedFile}`,
+    imageSource: `https://commons.wikimedia.org/wiki/File:${encodedFile}`,
+  };
+};
+const sourcedPhoto = (image, source) => ({ image, imageSource: source });
 
 const dishes = [
-  { id: "pho-bo", name: "Phở bò", cuisine: "Việt Nam", category: "Mì & phở", minutes: 45, description: "Nước dùng thơm, bánh phở mềm và thịt bò tái.", image: photo("photo-1569562211093-4ed0d0758f12"), badge: "MÓN QUỐC DÂN", vegetarian: false },
-  { id: "bun-cha", name: "Bún chả Hà Nội", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 35, description: "Thịt nướng than hoa, bún tươi và nước chấm chua ngọt.", image: photo("photo-1555939594-58d7cb561ad1"), badge: "BESTSELLER", vegetarian: false },
-  { id: "banh-mi", name: "Bánh mì đặc biệt", cuisine: "Việt Nam", category: "Món Việt", minutes: 15, description: "Ổ bánh giòn rụm, pate béo và đồ chua giòn mát.", image: photo("photo-1600688640154-9619e002df30"), badge: "NHANH GỌN", vegetarian: false },
-  { id: "com-tam", name: "Cơm tấm sườn bì", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 30, description: "Sườn nướng đậm đà, bì thính và mỡ hành thơm.", image: photo("photo-1512058564366-18510be2db19"), badge: "ĐẬM ĐÀ", vegetarian: false },
-  { id: "goi-cuon", name: "Gỏi cuốn tôm thịt", cuisine: "Việt Nam", category: "Món Việt", minutes: 20, description: "Cuốn tươi thanh mát, chấm tương đậu phộng.", image: photo("photo-1547592180-85f173990554"), badge: "TƯƠI NGON", vegetarian: false },
-  { id: "bun-bo", name: "Bún bò Huế", cuisine: "Việt Nam", category: "Mì & phở", minutes: 45, description: "Nước lèo cay thơm, sả đậm vị miền Trung.", image: photo("photo-1569718212165-3a8278d5f624"), badge: "CAY THƠM", vegetarian: false },
-  { id: "mi-quang", name: "Mì Quảng", cuisine: "Việt Nam", category: "Mì & phở", minutes: 35, description: "Sợi mì vàng, tôm thịt và bánh tráng giòn.", image: photo("photo-1555126634-323283e090fa"), badge: "MIỀN TRUNG", vegetarian: false },
-  { id: "banh-xeo", name: "Bánh xèo miền Tây", cuisine: "Việt Nam", category: "Món Việt", minutes: 30, description: "Vỏ bánh vàng giòn, cuốn rau sống thật đã.", image: photo("photo-1601050690597-df0568f70950"), badge: "GIÒN RỤM", vegetarian: false },
-  { id: "bun-rieu", name: "Bún riêu cua", cuisine: "Việt Nam", category: "Mì & phở", minutes: 40, description: "Vị cua đồng ngọt thanh cùng cà chua chín mọng.", image: photo("photo-1547592180-85f173990554"), badge: "VỊ NHÀ", vegetarian: false },
-  { id: "hu-tieu", name: "Hủ tiếu Nam Vang", cuisine: "Việt Nam", category: "Mì & phở", minutes: 35, description: "Tô hủ tiếu đầy đặn với tôm, thịt và trứng cút.", image: photo("photo-1569718212165-3a8278d5f624"), badge: "ĐẦY ĐẶN", vegetarian: false },
-  { id: "bun-thit-nuong", name: "Bún thịt nướng", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 25, description: "Thịt nướng thơm lừng trên nền bún và rau tươi.", image: photo("photo-1555939594-58d7cb561ad1"), badge: "MÓN TỦ", vegetarian: false },
-  { id: "cha-gio", name: "Chả giò giòn tan", cuisine: "Việt Nam", category: "Món Việt", minutes: 25, description: "Nhân thịt nấm thơm ngon, cuốn cùng rau sống.", image: photo("photo-1601050690597-df0568f70950"), badge: "GIÒN TAN", vegetarian: false },
-  { id: "com-ga", name: "Cơm gà Hội An", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 35, description: "Cơm vàng nghệ ăn cùng gà xé và rau thơm.", image: photo("photo-1512058564366-18510be2db19"), badge: "HỘI AN", vegetarian: false },
-  { id: "ca-kho", name: "Cá kho tộ", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 40, description: "Cá kho tiêu đậm vị, ăn với cơm trắng nóng hổi.", image: photo("photo-1547592180-85f173990554"), badge: "CƠM NHÀ", vegetarian: false },
-  { id: "pho-chay", name: "Phở nấm chay", cuisine: "Việt Nam", category: "Đồ chay", minutes: 25, description: "Nước dùng rau củ thanh ngọt, nấm tươi đậm đà.", image: photo("photo-1512621776951-a57141f2eefd"), badge: "THUẦN CHAY", vegetarian: true },
-  { id: "com-chay", name: "Cơm rau củ", cuisine: "Việt Nam", category: "Đồ chay", minutes: 20, description: "Bữa cơm đầy màu sắc với rau củ theo mùa.", image: photo("photo-1546069901-ba9599a7e63c"), badge: "THANH LÀNH", vegetarian: true },
-  { id: "sushi", name: "Sushi cá hồi", cuisine: "Nhật Bản", category: "Món quốc tế", minutes: 25, description: "Cá hồi tươi béo mềm cùng cơm giấm dẻo thơm.", image: photo("photo-1579871494447-9811cf80d66c"), badge: "TƯƠI MỖI NGÀY", vegetarian: false },
-  { id: "ramen", name: "Ramen tonkotsu", cuisine: "Nhật Bản", category: "Mì & phở", minutes: 40, description: "Nước dùng xương hầm béo ngậy, mì dai chuẩn vị.", image: photo("photo-1569718212165-3a8278d5f624"), badge: "ẤM BỤNG", vegetarian: false },
-  { id: "bibimbap", name: "Bibimbap", cuisine: "Hàn Quốc", category: "Cơm & bún", minutes: 25, description: "Cơm trộn rau củ, thịt bò và tương ớt gochujang.", image: photo("photo-1512058564366-18510be2db19"), badge: "MÀU SẮC", vegetarian: false },
-  { id: "tteokbokki", name: "Tokbokki phô mai", cuisine: "Hàn Quốc", category: "Món quốc tế", minutes: 20, description: "Bánh gạo dẻo cay nhẹ, phủ phô mai tan chảy.", image: photo("photo-1563245372-f21724e3856d"), badge: "HOT TREND", vegetarian: true },
-  { id: "pad-thai", name: "Pad Thai", cuisine: "Thái Lan", category: "Mì & phở", minutes: 25, description: "Mì xào tôm chua ngọt, thơm lạc rang và chanh.", image: photo("photo-1555126634-323283e090fa"), badge: "CHUA NGỌT", vegetarian: false },
-  { id: "green-curry", name: "Cà ri xanh Thái", cuisine: "Thái Lan", category: "Món quốc tế", minutes: 35, description: "Cốt dừa béo thơm, cà ri xanh và húng quế.", image: photo("photo-1603894584373-5ac82b2ae398"), badge: "BÉO THƠM", vegetarian: false },
-  { id: "pizza", name: "Pizza Margherita", cuisine: "Ý", category: "Món quốc tế", minutes: 35, description: "Phô mai mozzarella, sốt cà chua và húng quế.", image: photo("photo-1565299624946-b28f40a0ae38"), badge: "ĐANG HOT", vegetarian: true },
-  { id: "pasta", name: "Pasta sốt kem nấm", cuisine: "Ý", category: "Món quốc tế", minutes: 25, description: "Mì Ý dai mềm quyện sốt kem nấm thơm ngậy.", image: photo("photo-1473093295043-cdd812d0e601"), badge: "BÉO NGẬY", vegetarian: true },
-  { id: "xoi-xeo", name: "Xôi xéo đậu xanh", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 20, description: "Xôi nếp dẻo thơm, đậu xanh bùi và hành phi giòn.", image: photo("photo-1512058564366-18510be2db19"), badge: "BỮA SÁNG", vegetarian: true },
-  { id: "banh-cuon", name: "Bánh cuốn nóng", cuisine: "Việt Nam", category: "Món Việt", minutes: 25, description: "Bánh mỏng mềm cuốn thịt, rắc hành phi thơm.", image: photo("photo-1601050690597-df0568f70950"), badge: "BỮA SÁNG", vegetarian: false },
-  { id: "chao-ga", name: "Cháo gà nóng", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 30, description: "Cháo gạo ninh mềm, gà xé và hành ngò thơm.", image: photo("photo-1547592180-85f173990554"), badge: "ẤM BỤNG", vegetarian: false },
-  { id: "banh-bao", name: "Bánh bao trứng cút", cuisine: "Việt Nam", category: "Món Việt", minutes: 20, description: "Vỏ bánh mềm xốp, nhân thịt và trứng cút.", image: photo("photo-1563245372-f21724e3856d"), badge: "BỮA SÁNG", vegetarian: false }
+  { id: "pho-bo", name: "Phở bò", cuisine: "Việt Nam", category: "Mì & phở", minutes: 45, description: "Nước dùng thơm, bánh phở mềm và thịt bò tái.", ...commonsPhoto("5/52", "Bowl of Meatball pho.jpg"), badge: "MÓN QUỐC DÂN", vegetarian: false },
+  { id: "bun-cha", name: "Bún chả Hà Nội", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 35, description: "Thịt nướng than hoa, bún tươi và nước chấm chua ngọt.", ...commonsPhoto("4/4d", "Bún chả Vietnamese food.jpg"), badge: "BESTSELLER", vegetarian: false },
+  { id: "banh-mi", name: "Bánh mì đặc biệt", cuisine: "Việt Nam", category: "Món Việt", minutes: 15, description: "Ổ bánh giòn rụm, pate béo và đồ chua giòn mát.", ...commonsPhoto("0/0c", "Bánh mì thịt nướng.png", 0), badge: "NHANH GỌN", vegetarian: false },
+  { id: "com-tam", name: "Cơm tấm sườn bì", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 30, description: "Sườn nướng đậm đà, bì thính và mỡ hành thơm.", ...commonsPhoto("8/8e", "Com-Tam-2008.jpg"), badge: "ĐẬM ĐÀ", vegetarian: false },
+  { id: "goi-cuon", name: "Gỏi cuốn tôm thịt", cuisine: "Việt Nam", category: "Món Việt", minutes: 20, description: "Cuốn tươi thanh mát, chấm tương đậu phộng.", ...commonsPhoto("0/03", "Summer roll.jpg", 0), badge: "TƯƠI NGON", vegetarian: false },
+  { id: "bun-bo", name: "Bún bò Huế", cuisine: "Việt Nam", category: "Mì & phở", minutes: 45, description: "Nước lèo cay thơm, sả đậm vị miền Trung.", ...commonsPhoto("0/04", "Bún bò Huế - Chợ Đông Ba (2024) - img 02.jpg"), badge: "CAY THƠM", vegetarian: false },
+  { id: "mi-quang", name: "Mì Quảng", cuisine: "Việt Nam", category: "Mì & phở", minutes: 35, description: "Sợi mì vàng, tôm thịt và bánh tráng giòn.", ...commonsPhoto("5/57", "Mì Quảng, Da Nang, Vietnam.jpg"), badge: "MIỀN TRUNG", vegetarian: false },
+  { id: "banh-xeo", name: "Bánh xèo miền Tây", cuisine: "Việt Nam", category: "Món Việt", minutes: 30, description: "Vỏ bánh vàng giòn, cuốn rau sống thật đã.", ...commonsPhoto("5/59", "Banh Xeo with fish sauce and vegetables.jpg", 0), badge: "GIÒN RỤM", vegetarian: false },
+  { id: "bun-rieu", name: "Bún riêu cua", cuisine: "Việt Nam", category: "Mì & phở", minutes: 40, description: "Vị cua đồng ngọt thanh cùng cà chua chín mọng.", ...commonsPhoto("3/3b", "Bún riêu đặc biệt.jpg"), badge: "VỊ NHÀ", vegetarian: false },
+  { id: "hu-tieu", name: "Hủ tiếu Nam Vang", cuisine: "Việt Nam", category: "Mì & phở", minutes: 35, description: "Tô hủ tiếu đầy đặn với tôm, thịt và trứng cút.", ...commonsPhoto("2/2a", "Hu Tieu Nam Vang.jpg"), badge: "ĐẦY ĐẶN", vegetarian: false },
+  { id: "bun-thit-nuong", name: "Bún thịt nướng", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 25, description: "Thịt nướng thơm lừng trên nền bún và rau tươi.", ...commonsPhoto("4/47", "Bun thit nuong.jpg"), badge: "MÓN TỦ", vegetarian: false },
+  { id: "cha-gio", name: "Chả giò giòn tan", cuisine: "Việt Nam", category: "Món Việt", minutes: 25, description: "Nhân thịt nấm thơm ngon, cuốn cùng rau sống.", ...commonsPhoto("6/6b", "Cha gio.jpg"), badge: "GIÒN TAN", vegetarian: false },
+  { id: "com-ga", name: "Cơm gà Hội An", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 35, description: "Cơm vàng nghệ ăn cùng gà xé và rau thơm.", ...commonsPhoto("e/ea", "Dung Hoi An.JPG", 0), badge: "HỘI AN", vegetarian: false },
+  { id: "ca-kho", name: "Cá kho tộ", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 40, description: "Cá kho tiêu đậm vị, ăn với cơm trắng nóng hổi.", ...commonsPhoto("b/b4", "Cá kho tộ.JPG", 0), badge: "CƠM NHÀ", vegetarian: false },
+  { id: "pho-chay", name: "Phở nấm chay", cuisine: "Việt Nam", category: "Đồ chay", minutes: 25, description: "Nước dùng rau củ thanh ngọt, nấm tươi đậm đà.", ...commonsPhoto("6/66", "Easy vegan pho (48839662497).jpg", 0), badge: "THUẦN CHAY", vegetarian: true },
+  { id: "com-chay", name: "Cơm rau củ", cuisine: "Việt Nam", category: "Đồ chay", minutes: 20, description: "Bữa cơm đầy màu sắc với rau củ theo mùa.", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=82", badge: "THANH LÀNH", vegetarian: true },
+  { id: "sushi", name: "Sushi cá hồi", cuisine: "Nhật Bản", category: "Món quốc tế", minutes: 25, description: "Cá hồi tươi béo mềm cùng cơm giấm dẻo thơm.", ...commonsPhoto("6/60", "Sushi platter.jpg"), badge: "TƯƠI MỖI NGÀY", vegetarian: false },
+  { id: "ramen", name: "Ramen tonkotsu", cuisine: "Nhật Bản", category: "Mì & phở", minutes: 40, description: "Nước dùng xương hầm béo ngậy, mì dai chuẩn vị.", ...commonsPhoto("9/95", "Tonkotsu ramen.JPG"), badge: "ẤM BỤNG", vegetarian: false },
+  { id: "bibimbap", name: "Bibimbap", cuisine: "Hàn Quốc", category: "Cơm & bún", minutes: 25, description: "Cơm trộn rau củ, thịt bò và tương ớt gochujang.", ...commonsPhoto("4/44", "Dolsot-bibimbap.jpg"), badge: "MÀU SẮC", vegetarian: false },
+  { id: "tteokbokki", name: "Tokbokki phô mai", cuisine: "Hàn Quốc", category: "Món quốc tế", minutes: 20, description: "Bánh gạo dẻo cay nhẹ, phủ phô mai tan chảy.", ...commonsPhoto("4/4d", "Tteokbokki.JPG"), badge: "HOT TREND", vegetarian: true },
+  { id: "pad-thai", name: "Pad Thai", cuisine: "Thái Lan", category: "Mì & phở", minutes: 25, description: "Mì xào tôm chua ngọt, thơm lạc rang và chanh.", ...sourcedPhoto("https://www.themealdb.com/images/media/meals/rg9ze01763479093.jpg", "https://www.bbcgoodfood.com/recipes/easy-pad-thai"), badge: "CHUA NGỌT", vegetarian: false },
+  { id: "green-curry", name: "Cà ri xanh Thái", cuisine: "Thái Lan", category: "Món quốc tế", minutes: 35, description: "Cốt dừa béo thơm, cà ri xanh và húng quế.", ...sourcedPhoto("https://www.themealdb.com/images/media/meals/sstssx1487349585.jpg", "https://www.bbcgoodfood.com/recipes/3235/thai-green-chicken-curry"), badge: "BÉO THƠM", vegetarian: false },
+  { id: "pizza", name: "Pizza Margherita", cuisine: "Ý", category: "Món quốc tế", minutes: 35, description: "Phô mai mozzarella, sốt cà chua và húng quế.", ...commonsPhoto("5/57", "Neapolitan pizza at Trappica (48701940197).jpg"), badge: "ĐANG HOT", vegetarian: true },
+  { id: "pasta", name: "Pasta sốt kem nấm", cuisine: "Ý", category: "Món quốc tế", minutes: 25, description: "Mì Ý dai mềm quyện sốt kem nấm thơm ngậy.", ...commonsPhoto("e/e4", "Creamy Mushroom Pasta.jpg", 0), badge: "BÉO NGẬY", vegetarian: true },
+  { id: "xoi-xeo", name: "Xôi xéo đậu xanh", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 20, description: "Xôi nếp dẻo thơm, đậu xanh bùi và hành phi giòn.", ...commonsPhoto("f/f9", "Xôi xéo.jpg", 0), badge: "BỮA SÁNG", vegetarian: true },
+  { id: "banh-cuon", name: "Bánh cuốn nóng", cuisine: "Việt Nam", category: "Món Việt", minutes: 25, description: "Bánh mỏng mềm cuốn thịt, rắc hành phi thơm.", ...commonsPhoto("b/b2", "Bánh cuốn Thanh Trì.jpg"), badge: "BỮA SÁNG", vegetarian: false },
+  { id: "chao-ga", name: "Cháo gà nóng", cuisine: "Việt Nam", category: "Cơm & bún", minutes: 30, description: "Cháo gạo ninh mềm, gà xé và hành ngò thơm.", ...sourcedPhoto("https://www.themealdb.com/images/media/meals/1529446352.jpg", "https://sueandgambo.com/pages/chicken-congee"), badge: "ẤM BỤNG", vegetarian: false },
+  { id: "banh-bao", name: "Bánh bao trứng cút", cuisine: "Việt Nam", category: "Món Việt", minutes: 20, description: "Vỏ bánh mềm xốp, nhân thịt và trứng cút.", ...commonsPhoto("f/f4", "Baozi Chengdu.JPG"), badge: "BỮA SÁNG", vegetarian: false }
 ];
 
 const grid = document.querySelector("#dish-grid");
@@ -39,8 +48,7 @@ const dock = document.querySelector("#selection-dock");
 const dialog = document.querySelector("#result-dialog");
 const resultContent = document.querySelector("#result-content");
 const toast = document.querySelector("#toast");
-const reel = document.querySelector("#food-reel");
-const reelViewport = document.querySelector("#reel-viewport");
+const wheelArt = document.querySelector("#wheel-art");
 const wheelResult = document.querySelector("#wheel-result");
 const state = {
   category: "Tất cả",
@@ -58,6 +66,7 @@ const state = {
   meal: "all",
 };
 let isSpinning = false;
+let wheelRotation = 0;
 
 const breakfastIds = new Set(["pho-bo", "bun-bo", "banh-mi", "bun-cha", "bun-rieu", "hu-tieu", "mi-quang", "com-ga", "goi-cuon", "xoi-xeo", "banh-cuon", "chao-ga", "banh-bao"]);
 const dinnerOnlyIds = new Set(["sushi", "ramen", "tteokbokki", "green-curry", "pizza", "pasta"]);
@@ -107,6 +116,7 @@ function cardTemplate(dish, index) {
     <div class="card-photo">
       <img src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" loading="lazy" />
       <span class="dish-badge">${escapeHTML(dish.badge || dish.cuisine.toLocaleUpperCase("vi"))}</span>
+      ${dish.imageSource ? `<a class="photo-credit" href="${escapeHTML(dish.imageSource)}" target="_blank" rel="noopener noreferrer">Nguồn ảnh ↗</a>` : ""}
     </div>
     <div class="dish-body">
       <div class="dish-meta"><span class="cuisine">${escapeHTML(dish.cuisine)}</span><span>${dish.vegetarian ? "🥬 Có món chay" : "✦ Món được yêu thích"}</span></div>
@@ -152,27 +162,31 @@ function wheelDishes() {
 function renderWheel() {
   if (isSpinning) return;
   const options = wheelDishes();
-  reel.innerHTML = options.map((dish, index) => reelCard(dish, index)).join("");
-  reelViewport.scrollLeft = 0;
-  reel.style.transition = "none";
-  reel.style.transform = "translate3d(0, 0, 0)";
-  reelViewport.setAttribute("aria-label", `Danh sách ${options.length} món trong vòng quay`);
+  const colors = ["#245d45", "#9d7040", "#6f8d72", "#a94f34", "#4b775f", "#c18b43"];
+  const center = 250;
+  const radius = 238;
+  const pointAt = (angle) => {
+    const radians = (angle * Math.PI) / 180;
+    return [center + radius * Math.cos(radians), center + radius * Math.sin(radians)];
+  };
+  wheelArt.innerHTML = options.map((dish, index) => {
+    const step = 360 / options.length;
+    const start = -90 + index * step + Math.min(0.65, step / 8);
+    const end = -90 + (index + 1) * step - Math.min(0.65, step / 8);
+    const [startX, startY] = pointAt(start);
+    const [endX, endY] = pointAt(end);
+    const largeArc = end - start > 180 ? 1 : 0;
+    return `<path class="wheel-segment" d="M${center} ${center}L${startX} ${startY}A${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}Z" fill="${colors[index % colors.length]}" data-dish-index="${index}"><title>${escapeHTML(dish.name)}</title></path>`;
+  }).join("") + `<circle class="wheel-rim" cx="${center}" cy="${center}" r="${radius}" />`;
+  wheelArt.style.transition = "none";
+  wheelArt.style.transform = "rotate(0deg)";
+  wheelRotation = 0;
+  wheelArt.setAttribute("aria-label", `Vòng quay gồm ${options.length} món ăn`);
   document.querySelector("#wheel-count").textContent = `${options.length} món ${state.meal === "all" ? "đang chờ bạn" : `cho ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"}`}`;
   document.querySelector("#spin-button").disabled = options.length === 0;
   document.querySelector("#wheel-description").textContent = state.meal === "all"
     ? "Vòng quay sẽ chọn ngẫu nhiên trong toàn bộ món ăn — rồi tìm kiểu địa điểm hợp với buổi ăn."
     : `Vòng quay đang lọc ${options.length} món hợp với ${state.meal === "breakfast" ? "bữa sáng" : state.meal === "lunch" ? "bữa trưa" : "bữa tối"} của bạn.`;
-}
-
-function reelCard(dish, index, isWinner = false) {
-  const rarity = index === 0 ? "MÓN TỦ" : dish.vegetarian ? "THUẦN CHAY" : "MÓN NGON";
-  return `<article class="reel-card${isWinner ? " reel-winner" : ""}" data-reel-index="${index}">
-    <div class="reel-photo-wrap">
-      <img class="reel-photo" src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" ${index < 6 ? 'loading="eager"' : 'loading="lazy"'} />
-      <span class="reel-rarity">${rarity}</span>
-    </div>
-    <div class="reel-card-copy"><span>${escapeHTML(dish.cuisine)}</span><h4>${escapeHTML(dish.name)}</h4></div>
-  </article>`;
 }
 
 function spinWheel() {
@@ -189,29 +203,25 @@ function spinWheel() {
   button.innerHTML = '<span class="spin-icon" aria-hidden="true">⟳</span> Đang quay…';
 
   const winnerIndex = Math.floor(Math.random() * options.length);
-  const targetIndex = 23;
-  const reelItems = Array.from({ length: targetIndex }, () => options[Math.floor(Math.random() * options.length)]);
-  reelItems.push(options[winnerIndex]);
-  reel.innerHTML = reelItems.map((dish, index) => reelCard(dish, index)).join("");
-  reelViewport.scrollLeft = 0;
-  reel.style.transition = "none";
-  reel.style.transform = "translate3d(0, 0, 0)";
-  const targetCard = reel.querySelector(`[data-reel-index="${targetIndex}"]`);
-  const destination = reelViewport.clientWidth / 2 - (targetCard.offsetLeft + targetCard.offsetWidth / 2);
+  const segment = wheelArt.querySelector(`[data-dish-index="${winnerIndex}"]`);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const duration = reducedMotion ? 1 : 4200;
-  void reel.offsetWidth;
+  const duration = reducedMotion ? 1 : 5200;
+  const alignment = (360 - (winnerIndex + 0.5) * 360 / options.length + 360) % 360;
+  const currentAlignment = ((wheelRotation % 360) + 360) % 360;
+  const rotation = wheelRotation + 6 * 360 + (alignment - currentAlignment + 360) % 360;
+  wheelArt.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
+  void wheelArt.offsetWidth;
   requestAnimationFrame(() => {
-    reel.style.transition = `transform ${duration}ms cubic-bezier(.12,.75,.2,1)`;
-    reel.style.transform = `translate3d(${destination}px, 0, 0)`;
+    wheelArt.style.transform = `rotate(${rotation}deg)`;
+    wheelRotation = rotation;
   });
 
   setTimeout(() => {
     const winner = options[winnerIndex];
     const place = locations[state.meal][Math.floor(Math.random() * locations[state.meal].length)];
     const mapsQuery = encodeURIComponent(`${winner.name} ${place} gần đây`);
-    targetCard.classList.add("reel-winner");
-    wheelResult.innerHTML = `<img class="wheel-result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" /><div class="wheel-result-copy"><span class="wheel-result-label">KÈO NÀY CHỐT RỒI</span><h4>${escapeHTML(winner.name)}</h4><p>${escapeHTML(winner.cuisine)} · ${escapeHTML(place)}</p><a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer">Tìm quán gần bạn trên Google Maps <span aria-hidden="true">↗</span></a></div>`;
+    segment.classList.add("wheel-segment--winner");
+    wheelResult.innerHTML = `<div class="wheel-result-image"><img class="wheel-result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" />${winner.imageSource ? `<a class="photo-credit" href="${escapeHTML(winner.imageSource)}" target="_blank" rel="noopener noreferrer">Nguồn ảnh ↗</a>` : ""}</div><div class="wheel-result-copy"><span class="wheel-result-label">KÈO NÀY CHỐT RỒI</span><h4>${escapeHTML(winner.name)}</h4><p>${escapeHTML(winner.cuisine)} · ${escapeHTML(place)}</p><a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer">Tìm quán gần bạn trên Google Maps <span aria-hidden="true">↗</span></a></div>`;
     wheelResult.hidden = false;
     wheelResult.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
     button.disabled = false;
@@ -257,6 +267,7 @@ async function searchGlobal(query) {
       minutes: 30,
       description: meal.strCategory ? `${meal.strCategory} · Khám phá công thức từ ${meal.strArea || "thế giới"}.` : `Món ngon từ ${meal.strArea || "thế giới"}, xem công thức tại TheMealDB.`,
       image: meal.strMealThumb,
+      imageSource: meal.strSource || `https://www.themealdb.com/meal/${meal.idMeal}`,
       badge: "THEMEALDB",
       vegetarian: /vegetarian|vegan/i.test(meal.strCategory || ""),
       sourceUrl: meal.strSource || meal.strYoutube || "",
@@ -365,7 +376,7 @@ function pickWinner() {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   setTimeout(() => {
     const winner = options[Math.floor(Math.random() * options.length)];
-    resultContent.innerHTML = `<img class="result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" /><span class="result-kicker">KÈO NÀY CHỐT RỒI!</span><h2>${escapeHTML(winner.name)}</h2><p>${escapeHTML(winner.cuisine)} · Sẵn sàng trong khoảng ${winner.minutes} phút</p>${winner.sourceUrl ? `<a class="result-source" href="${escapeHTML(winner.sourceUrl)}" target="_blank" rel="noopener noreferrer">Xem thêm về món này ↗</a>` : ""}<button class="result-again" id="pick-again" type="button">Bốc thăm lại</button>`;
+    resultContent.innerHTML = `<div class="result-image-wrap"><img class="result-photo" src="${escapeHTML(winner.image)}" alt="${escapeHTML(winner.name)}" />${winner.imageSource ? `<a class="photo-credit" href="${escapeHTML(winner.imageSource)}" target="_blank" rel="noopener noreferrer">Nguồn ảnh ↗</a>` : ""}</div><span class="result-kicker">KÈO NÀY CHỐT RỒI!</span><h2>${escapeHTML(winner.name)}</h2><p>${escapeHTML(winner.cuisine)} · Sẵn sàng trong khoảng ${winner.minutes} phút</p>${winner.sourceUrl ? `<a class="result-source" href="${escapeHTML(winner.sourceUrl)}" target="_blank" rel="noopener noreferrer">Xem thêm về món này ↗</a>` : ""}<button class="result-again" id="pick-again" type="button">Bốc thăm lại</button>`;
     document.querySelector("#pick-again").addEventListener("click", () => {
       if (options.length === 1) showToast("Chỉ có một món trong kèo này — nghe cũng hợp lý đó!");
       dialog.close();
